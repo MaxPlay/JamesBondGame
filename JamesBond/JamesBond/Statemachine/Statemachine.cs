@@ -9,6 +9,14 @@ namespace JamesBond.Statemachine
 {
     public class StateMachine
     {
+        private bool exiting;
+
+        public bool Exiting
+        {
+            get { return exiting; }
+        }
+
+
         Dictionary<string, State> states;
         private string targetState;
         private string currentState;
@@ -34,6 +42,7 @@ namespace JamesBond.Statemachine
             if (states.Count == 1)
             {
                 currentState = name;
+                targetState = name;
             }
         }
 
@@ -51,7 +60,7 @@ namespace JamesBond.Statemachine
 
         public void Update(GameTime gameTime)
         {
-            if (states.Count == 0)
+            if (states.Count == 0 || !running)
                 return;
 
             if (targetState != currentState)
@@ -66,6 +75,11 @@ namespace JamesBond.Statemachine
         public void Draw(SpriteBatch spriteBatch)
         {
             states[currentState].Draw(spriteBatch);
+        }
+
+        public void ExitGame()
+        {
+            exiting = true;
         }
     }
 }

@@ -8,10 +8,17 @@ using System.Text;
 
 namespace JamesBond.Level
 {
-    class Level
+    public class Level
     {
+        SpriteSheet tileset;
         int[] tiles;
         Point dimension;
+
+        public Level()
+        {
+            dimension = new Point(20,20);
+            tiles = new int[20 * 20];
+        }
 
         public int this[int x, int y]
         {
@@ -31,7 +38,7 @@ namespace JamesBond.Level
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, SpriteSheet tileset)
+        public void Draw(SpriteBatch spriteBatch)
         {
             for (int y = 0; y < dimension.Y; y++)
             {

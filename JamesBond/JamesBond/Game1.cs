@@ -17,14 +17,16 @@ namespace JamesBond
     /// </summary>
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
+        public static GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         StateMachine statemachine;
+        public static ContentManager ContentManager;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            ContentManager = Content;
         }
 
         /// <summary>
@@ -37,6 +39,10 @@ namespace JamesBond
         {
             // TODO: Add your initialization logic here
             statemachine = new StateMachine();
+            new SplashScreen("Splash", statemachine);
+            new MainMenu("MainMenu", statemachine);
+            new Gameplay("Gameplay", statemachine);
+
             base.Initialize();
         }
 
@@ -46,10 +52,7 @@ namespace JamesBond
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace JamesBond
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+
         }
 
         /// <summary>
@@ -68,11 +71,11 @@ namespace JamesBond
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            InputManager.Update();
+            statemachine.Update(gameTime);
 
-            // TODO: Add your update logic here
+            if (statemachine.Exiting)
+                Exit();
 
             base.Update(gameTime);
         }
@@ -83,9 +86,9 @@ namespace JamesBond
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            statemachine.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }
