@@ -6,17 +6,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace JamesBond.Level
+namespace JamesBond.Levels
 {
     public class Level
     {
         SpriteSheet tileset;
         int[] tiles;
-        Point dimension;
+        private Point dimension;
+
+        public Point Dimension
+        {
+            get { return dimension; }
+            set { dimension = value; }
+        }
+
+        private int tilesize;
+        
+        public int Tilesize
+        {
+            get { return tilesize; }
+            set { tilesize = value; }
+        }
+
 
         public Level()
         {
-            dimension = new Point(20,20);
+            dimension = new Point(20, 20);
             tiles = new int[20 * 20];
         }
 

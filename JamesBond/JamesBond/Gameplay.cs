@@ -5,25 +5,47 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using JamesBond.Level;
+using JamesBond.Levels;
+using JamesBond.Physics;
+using JamesBond.Characters;
 
 namespace JamesBond
 {
     class Gameplay : State
     {
         Dictionary<int, Level> levels;
-
+        Bond player;
         int currentLevel;
 
         public Gameplay(string name, StateMachine statemachine)
             : base(name, statemachine)
         {
-
+            player = new Bond();
+            player.BoundingBox = new Rectangle(50, 50, 20, 40);
+            levels = new Dictionary<int, Level>();
+            levels.Add(0, new Level());
+            levels[currentLevel].Tilesize = 32;
+            for (int y = 0; y < levels[currentLevel].Dimension.Y; y++)
+            {
+                for (int x = 0; x < levels[currentLevel].Dimension.X; x++)
+                {
+                    levels[currentLevel][x, y] = x == 0 || y == 0 || x == levels[currentLevel].Dimension.X - 1 || y == levels[currentLevel].Dimension.Y - 1 ? 1 : 0;
+                }
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-
+            spriteBatch.Begin();
+            for (int y = 0; y < levels[currentLevel].Dimension.Y; y++)
+            {
+                for (int x = 0; x < levels[currentLevel].Dimension.X; x++)
+                {
+                    spriteBatch.Draw(Game1.Pixel, new Rectangle(x * levels[currentLevel].Tilesize, y * levels[currentLevel].Tilesize, levels[currentLevel].Tilesize, levels[currentLevel].Tilesize), levels[currentLevel][x, y] > 0 ? Color.Red : Color.Transparent);
+                }
+            }
+            spriteBatch.Draw(Game1.Pixel, player.BoundingBox, Color.Blue);
+            spriteBatch.End();
         }
 
         public override void Initialize()
@@ -38,7 +60,16 @@ namespace JamesBond
 
         public override void Update(GameTime gameTime)
         {
+            PhysicsManager.Update(gameTime, levels[currentLevel]);
 
+            if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.Space))
+                player.Velocity += Vector2.UnitY * -5;
+
+            if (InputManager.CurrentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                player.Velocity += Vector2.UnitX * 1;
+
+            if (InputManager.CurrentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                player.Velocity += Vector2.UnitX * -1;
         }
     }
 }
