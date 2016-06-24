@@ -78,6 +78,7 @@
     <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\Animator.cs" />
     <Compile Include="Characters\Bond.cs" />
+    <Compile Include="Debug.cs" />
     <Compile Include="Gameplay.cs" />
     <Compile Include="GUI\Button.cs" />
     <Compile Include="InputManager.cs" />

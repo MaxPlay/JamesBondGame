@@ -101,7 +101,7 @@ namespace JamesBond
             GraphicsDevice.Clear(Color.Black);
 
             statemachine.Draw(spriteBatch);
-
+            Debug.Draw(spriteBatch);
             base.Draw(gameTime);
         }
     }

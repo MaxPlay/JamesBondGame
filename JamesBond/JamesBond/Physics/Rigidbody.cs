@@ -19,6 +19,14 @@ namespace JamesBond.Physics
         protected Rectangle boundingBox;
         protected Vector2 position;
         protected Vector2 velocity;
+        protected bool grounded;
+
+        public bool Grounded
+        {
+            get { return grounded; }
+            set { grounded = value; }
+        }
+
 
         #endregion Protected Fields
 
@@ -60,16 +68,80 @@ namespace JamesBond.Physics
 
         public void UpdatePhysics(Level level, GameTime gameTime)
         {
+            if (!awake)
+                return;
+
+            //Apply Velocity to Rigidbody
+
             this.velocity += PhysicsManager.Gravity * (gameTime.ElapsedGameTime.Milliseconds / 1000f);
 
             Vector2 position = new Vector2(boundingBox.X, boundingBox.Y);
             Vector2 oldposition = position;
             position += velocity;
 
+            //Generate a boundingbox around the area that the object passes through
+
             Rectangle movedboundingBox = Rectangle.Union(
                 new Rectangle((int)position.X, (int)position.Y, boundingBox.Width, boundingBox.Height),
                 new Rectangle((int)oldposition.X, (int)oldposition.Y, boundingBox.Width, boundingBox.Height)
                 );
+            List<Rectangle> colliders = GetPossibleColliders(level, movedboundingBox);
+
+            Rectangle finalBoundingBox = boundingBox;
+            finalBoundingBox.X = (int)position.X;
+            finalBoundingBox.Y = (int)position.Y;
+
+            Point Top = new Point(boundingBox.Center.X, finalBoundingBox.Top);
+            Point Bottom = new Point(boundingBox.Center.X, finalBoundingBox.Bottom);
+            Point Left = new Point(finalBoundingBox.Left, boundingBox.Center.Y);
+            Point Right = new Point(finalBoundingBox.Right, boundingBox.Center.Y);
+
+            grounded = false;
+            foreach (Rectangle collider in colliders)
+            {
+                Vector2 distanceCorrection = new Vector2();
+
+                if(collider.Contains(Top))
+                {
+                    distanceCorrection.Y = collider.Bottom - Top.Y;
+                    velocity.Y = 0;
+                }
+
+                if (collider.Contains(Bottom))
+                {
+                    distanceCorrection.Y = collider.Top - Bottom.Y;
+                    velocity.Y = 0;
+                    velocity.X *= 0.9f;
+                    grounded = true;
+                }
+
+                if (collider.Contains(Left))
+                {
+                    distanceCorrection.X = collider.Right - Left.X;
+                    velocity.X = 0;
+                }
+
+                if (collider.Contains(Right))
+                {
+                    distanceCorrection.X = collider.Left - Right.X;
+                    velocity.X = 0;
+                }
+
+                if (Math.Abs(velocity.X) < 0.1f)
+                    velocity.X = 0;
+                if (Math.Abs(velocity.Y) < 0.1f)
+                    velocity.Y = 0;
+
+                position += distanceCorrection;
+            }
+
+            boundingBox.X = (int)position.X;
+            boundingBox.Y = (int)position.Y;
+        }
+
+        private static List<Rectangle> GetPossibleColliders(Level level, Rectangle movedboundingBox)
+        {
+            //Generate a list of all the colliders that are overlapping this area
 
             List<Rectangle> colliders = new List<Rectangle>();
 
@@ -87,73 +159,10 @@ namespace JamesBond.Physics
                 }
             }
 
-            for (int i = 0; i < colliders.Count; i++)
-            {
-                if (movedboundingBox.Intersects(colliders[i]))
-                {
-                    Vector2 majorAxis = GetMajorAxis(colliders[i], boundingBox);
-                    Vector2 collisionNormal = GetAxialDistance(majorAxis, colliders[i], boundingBox);
-                    collisionNormal.Normalize();
-
-                    Rectangle positionedBoundingBox = new Rectangle((int)position.X, (int)position.Y, boundingBox.Width, boundingBox.Height);
-
-                    for (int j = 0; j < velocity.Length(); j++)
-                    {
-                        if (colliders[i].Intersects(positionedBoundingBox))
-                        {
-                            positionedBoundingBox.X += (int)collisionNormal.X;
-                            positionedBoundingBox.Y += (int)collisionNormal.Y;
-                        }
-                        else
-                            break;
-                    }
-
-                    if (collisionNormal.X != 0)
-                        velocity.X = 0;
-                    if (collisionNormal.Y != 0)
-                        velocity.Y = 0;
-
-                    position.X = positionedBoundingBox.X;
-                    position.Y = positionedBoundingBox.Y;
-
-                    Console.Clear();
-                    Console.WriteLine(Velocity);
-                    Console.WriteLine(majorAxis);
-                }
-            }
-
-            boundingBox.X = (int)position.X;
-            boundingBox.Y = (int)position.Y;
-        }
-
-        private Vector2 GetAxialDistance(Vector2 majorAxis, Rectangle boundingBox1, Rectangle boundingBox2)
-        {
-            if (majorAxis.X == 0)
-                return Vector2.UnitY * (majorAxis.Y - boundingBox1.Height / 2f - boundingBox2.Height / 2f);
-            else
-                return Vector2.UnitX * (majorAxis.X - boundingBox1.Width / 2f - boundingBox2.Width / 2f);
-        }
-
-        private Vector2 GetMajorAxis(Rectangle otherBounds, Rectangle ownBounds)
-        {
-            Vector2 distance = new Vector2();
-
-            otherBounds.Inflate(ownBounds.Height / 2, ownBounds.Width / 2);
-            Vector2 center = new Vector2(ownBounds.Center.X, ownBounds.Center.Y);
-            float dx = Math.Max(Math.Abs(center.X - otherBounds.Center.X) - otherBounds.Width / 2, 0);
-            float dy = Math.Max(Math.Abs(center.Y - otherBounds.Center.Y) - otherBounds.Height / 2, 0);
-            distance = new Vector2(dx, dy);
-
-            if (Math.Abs(distance.X) > Math.Abs(distance.Y))
-            {
-                return Vector2.UnitX * distance.X;
-            }
-            else
-            {
-                return Vector2.UnitY * distance.Y;
-            }
+            return colliders;
         }
 
         #endregion Public Methods
+
     }
 }
