@@ -87,21 +87,28 @@ namespace JamesBond.Physics
                 );
             List<Rectangle> colliders = GetPossibleColliders(level, movedboundingBox);
 
-            Rectangle finalBoundingBox = boundingBox;
-            finalBoundingBox.X = (int)position.X;
-            finalBoundingBox.Y = (int)position.Y;
-
-            Point Top = new Point(boundingBox.Center.X, finalBoundingBox.Top);
-            Point Bottom = new Point(boundingBox.Center.X, finalBoundingBox.Bottom);
-            Point Left = new Point(finalBoundingBox.Left, boundingBox.Center.Y);
-            Point Right = new Point(finalBoundingBox.Right, boundingBox.Center.Y);
+            
+            //Point Left = new Point(finalBoundingBox.Left, boundingBox.Center.Y);
+            //Point Right = new Point(finalBoundingBox.Right, boundingBox.Center.Y);
 
             grounded = false;
             foreach (Rectangle collider in colliders)
             {
+                Rectangle finalBoundingBox = boundingBox;
+                finalBoundingBox.X = (int)position.X;
+                finalBoundingBox.Y = (int)position.Y;
+
+                Point BottomLeft = new Point(finalBoundingBox.Left, finalBoundingBox.Bottom - (int)(finalBoundingBox.Height * 0.2f));
+                Point BottomRight = new Point(finalBoundingBox.Right, finalBoundingBox.Bottom - (int)(finalBoundingBox.Height * 0.2f));
+                Point TopLeft = new Point(finalBoundingBox.Left, finalBoundingBox.Top + (int)(finalBoundingBox.Height * 0.1f));
+                Point TopRight = new Point(finalBoundingBox.Right, finalBoundingBox.Top + (int)(finalBoundingBox.Height * 0.1f));
+
+                Point Top = new Point(boundingBox.Center.X, finalBoundingBox.Top);
+                Point Bottom = new Point(boundingBox.Center.X, finalBoundingBox.Bottom);
+
                 Vector2 distanceCorrection = new Vector2();
 
-                if(collider.Contains(Top))
+                if (collider.Contains(Top))
                 {
                     distanceCorrection.Y = collider.Bottom - Top.Y;
                     velocity.Y = 0;
@@ -115,15 +122,15 @@ namespace JamesBond.Physics
                     grounded = true;
                 }
 
-                if (collider.Contains(Left))
+                if (collider.Contains(TopLeft) || collider.Contains(BottomLeft))
                 {
-                    distanceCorrection.X = collider.Right - Left.X;
+                    distanceCorrection.X = collider.Right - TopLeft.X;
                     velocity.X = 0;
                 }
 
-                if (collider.Contains(Right))
+                if (collider.Contains(TopRight) || collider.Contains(BottomRight))
                 {
-                    distanceCorrection.X = collider.Left - Right.X;
+                    distanceCorrection.X = collider.Left - TopRight.X;
                     velocity.X = 0;
                 }
 
@@ -133,7 +140,14 @@ namespace JamesBond.Physics
                     velocity.Y = 0;
 
                 position += distanceCorrection;
+                Debug.DrawRectangle(new Rectangle(Top.X, Top.Y, 1, 1));
+                Debug.DrawRectangle(new Rectangle(TopLeft.X, TopLeft.Y, 1, 1));
+                Debug.DrawRectangle(new Rectangle(BottomLeft.X, BottomLeft.Y, 1, 1));
+                Debug.DrawRectangle(new Rectangle(Bottom.X, Bottom.Y, 1, 1));
+                Debug.DrawRectangle(new Rectangle(TopRight.X, TopRight.Y, 1, 1));
+                Debug.DrawRectangle(new Rectangle(BottomRight.X, BottomRight.Y, 1, 1));
             }
+
 
             boundingBox.X = (int)position.X;
             boundingBox.Y = (int)position.Y;
