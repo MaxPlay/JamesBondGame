@@ -77,10 +77,13 @@ namespace JamesBond.GUI
             this.texture = texture;
             this.hoverTexture = hoverTexture;
             this.text = text;
-            this.boundingBox = texture.Bounds;
+
+            if (texture != null)
+                this.boundingBox = texture.Bounds;
+
             this.boundingBox.X = position.X;
             this.boundingBox.Y = position.Y;
-            this.textColor = Color.Black;
+            this.textColor = Color.White;
             this.hoverTextColor = Color.Black;
         }
 
@@ -101,13 +104,15 @@ namespace JamesBond.GUI
         {
             if (hover)
             {
-                spriteBatch.Draw(hoverTexture, boundingBox, Color.White);
-                spriteBatch.DrawString(font, text, new Vector2(boundingBox.X, boundingBox.Y) + (font.MeasureString(text) / 2f), hoverTextColor);
+                if (hoverTexture != null)
+                    spriteBatch.Draw(hoverTexture, boundingBox, Color.White);
+                spriteBatch.DrawString(font, text, new Vector2(boundingBox.Center.X, boundingBox.Center.Y) - (font.MeasureString(text) / 2f), hoverTextColor);
             }
             else
             {
-                spriteBatch.Draw(texture, boundingBox, Color.White);
-                spriteBatch.DrawString(font, text, new Vector2(boundingBox.X, boundingBox.Y) + (font.MeasureString(text) / 2f), textColor);
+                if (texture != null)
+                    spriteBatch.Draw(texture, boundingBox, Color.White);
+                spriteBatch.DrawString(font, text, new Vector2(boundingBox.Center.X, boundingBox.Center.Y)- (font.MeasureString(text) / 2f), textColor);
             }
         }
 

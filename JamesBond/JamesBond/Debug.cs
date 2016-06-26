@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -45,6 +46,14 @@ namespace JamesBond
             spriteBatch.End();
 
             objects.Clear();
+        }
+
+        internal static void Log(string text)
+        {
+            using (StreamWriter writer = File.AppendText("debug.log"))
+            {
+                writer.WriteLine(text);
+            }
         }
     }
 }

@@ -24,7 +24,7 @@ namespace JamesBond.Statemachine
 
         public void SetCurrentState(string name)
         {
-            if (states.ContainsKey(targetState))
+            if (states.ContainsKey(name))
                 targetState = name;
         }
 

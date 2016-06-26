@@ -27,12 +27,11 @@ namespace JamesBond.Levels
             get { return tilesize; }
             set { tilesize = value; }
         }
-
-
+        
         public Level()
         {
-            dimension = new Point(20, 20);
-            tiles = new int[20 * 20];
+            dimension = new Point(10, 10);
+            tiles = new int[10 * 10];
         }
 
         public int this[int x, int y]
@@ -60,7 +59,7 @@ namespace JamesBond.Levels
                 for (int x = 0; x < dimension.X; x++)
                 {
                     if (this[x, y] > -1)
-                        spriteBatch.Draw(tileset.Texture, new Vector2(x * tileset.TileSize.X, y * tileset.TileSize.Y), tileset[this[x, y]], Color.White);
+                        spriteBatch.Draw(tileset.Texture, new Vector2(x * tileset.TileSize.X, y * tileset.TileSize.Y), tileset[this[x, y]].SpriteRectangle, Color.White);
                 }
             }
         }

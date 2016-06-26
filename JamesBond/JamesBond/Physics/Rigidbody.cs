@@ -62,19 +62,44 @@ namespace JamesBond.Physics
             set { velocity = value; }
         }
 
+        protected Vector2 limitVelocity;
+
+        public Vector2 LimitVelocity
+        {
+            get { return limitVelocity; }
+            set { limitVelocity = value; }
+        }
+
+
         #endregion Public Properties
 
         #region Public Methods
 
+        /// <summary>
+        /// Was lustiges rein.
+        /// </summary>
+        /// <param name="level">Der Level</param>
+        /// <param name="gameTime">Der GameTime</param>
         public void UpdatePhysics(Level level, GameTime gameTime)
         {
             if (!awake)
                 return;
 
-            //Apply Velocity to Rigidbody
-
+            //Apply Gravity
             this.velocity += PhysicsManager.Gravity * (gameTime.ElapsedGameTime.Milliseconds / 1000f);
 
+            //Limit the velocity
+            if (Math.Abs(velocity.X) > Math.Abs(limitVelocity.X))
+            {
+                velocity.X = Math.Sign(velocity.X) != Math.Sign(limitVelocity.X) ? velocity.X = limitVelocity.X *- 1 : velocity.X = limitVelocity.X;
+            }
+
+            if (Math.Abs(velocity.Y) > Math.Abs(limitVelocity.Y))
+            {
+                velocity.Y = Math.Sign(velocity.Y) != Math.Sign(limitVelocity.Y) ? velocity.Y = limitVelocity.Y *- 1 : velocity.Y = limitVelocity.Y;
+            }
+
+            //Apply velocity
             Vector2 position = new Vector2(boundingBox.X, boundingBox.Y);
             Vector2 oldposition = position;
             position += velocity;
@@ -87,7 +112,7 @@ namespace JamesBond.Physics
                 );
             List<Rectangle> colliders = GetPossibleColliders(level, movedboundingBox);
 
-            
+
             //Point Left = new Point(finalBoundingBox.Left, boundingBox.Center.Y);
             //Point Right = new Point(finalBoundingBox.Right, boundingBox.Center.Y);
 
@@ -149,8 +174,8 @@ namespace JamesBond.Physics
             }
 
 
-            boundingBox.X = (int)position.X;
-            boundingBox.Y = (int)position.Y;
+            boundingBox.X = (int)Math.Round(position.X);
+            boundingBox.Y = (int)Math.Round(position.Y);
         }
 
         private static List<Rectangle> GetPossibleColliders(Level level, Rectangle movedboundingBox)

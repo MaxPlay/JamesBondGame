@@ -38,17 +38,21 @@ namespace JamesBond
         /// </summary>
         protected override void Initialize()
         {
+            IsMouseVisible = true;
+            graphics.PreferredBackBufferWidth = 10 * 32;
+            graphics.PreferredBackBufferHeight = 10 * 32;
+            graphics.ApplyChanges();
+
             // TODO: Add your initialization logic here
             Pixel = new Texture2D(graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Pixel.SetData<Color>(new Color[] { Color.White });
-
-
+            
             statemachine = new StateMachine();
             new SplashScreen("Splash", statemachine);
             new MainMenu("MainMenu", statemachine);
             new Gameplay("Gameplay", statemachine);
 
-            statemachine.SetCurrentState("Gameplay");
+            statemachine.SetCurrentState("Splash");
             statemachine.Start();
 
             base.Initialize();
@@ -61,10 +65,6 @@ namespace JamesBond
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            IsMouseVisible = true;
-            graphics.PreferredBackBufferWidth = 20 * 32;
-            graphics.PreferredBackBufferHeight = 20 * 32;
-            graphics.ApplyChanges();
         }
 
         /// <summary>

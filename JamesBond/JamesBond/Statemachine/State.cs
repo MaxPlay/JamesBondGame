@@ -9,7 +9,7 @@ namespace JamesBond.Statemachine
 {
     public abstract class State
     {
-        StateMachine statemachine;
+        protected StateMachine statemachine;
 
         public State(string name, StateMachine statemachine)
         {

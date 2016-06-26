@@ -19,7 +19,6 @@ namespace JamesBond.Physics
             set { gravity = value; }
         }
 
-
         static List<Rigidbody> rigidbodies;
 
         static PhysicsManager()
