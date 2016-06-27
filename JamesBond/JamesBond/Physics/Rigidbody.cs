@@ -91,12 +91,12 @@ namespace JamesBond.Physics
             //Limit the velocity
             if (Math.Abs(velocity.X) > Math.Abs(limitVelocity.X))
             {
-                velocity.X = Math.Sign(velocity.X) != Math.Sign(limitVelocity.X) ? velocity.X = limitVelocity.X *- 1 : velocity.X = limitVelocity.X;
+                velocity.X = Math.Sign(velocity.X) != Math.Sign(limitVelocity.X) ? velocity.X = limitVelocity.X * -1 : velocity.X = limitVelocity.X;
             }
 
             if (Math.Abs(velocity.Y) > Math.Abs(limitVelocity.Y))
             {
-                velocity.Y = Math.Sign(velocity.Y) != Math.Sign(limitVelocity.Y) ? velocity.Y = limitVelocity.Y *- 1 : velocity.Y = limitVelocity.Y;
+                velocity.Y = Math.Sign(velocity.Y) != Math.Sign(limitVelocity.Y) ? velocity.Y = limitVelocity.Y * -1 : velocity.Y = limitVelocity.Y;
             }
 
             //Apply velocity
@@ -111,7 +111,6 @@ namespace JamesBond.Physics
                 new Rectangle((int)oldposition.X, (int)oldposition.Y, boundingBox.Width, boundingBox.Height)
                 );
             List<Rectangle> colliders = GetPossibleColliders(level, movedboundingBox);
-
 
             //Point Left = new Point(finalBoundingBox.Left, boundingBox.Center.Y);
             //Point Right = new Point(finalBoundingBox.Right, boundingBox.Center.Y);
@@ -188,6 +187,8 @@ namespace JamesBond.Physics
             int Bottom = (movedboundingBox.Bottom / level.Tilesize + 1);
             int Left = (movedboundingBox.Left / level.Tilesize);
             int Right = (movedboundingBox.Right / level.Tilesize + 1);
+
+            //Debug.DrawRectangle(new Rectangle(Left*level.Tilesize, Top * level.Tilesize, (Right - Left) * level.Tilesize, (Bottom - Top) * level.Tilesize), Color.Yellow * 0.2f);
 
             for (int x = Left; x < Right; x++)
             {
