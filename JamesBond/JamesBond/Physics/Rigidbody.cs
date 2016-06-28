@@ -127,8 +127,8 @@ namespace JamesBond.Physics
                 Point TopLeft = new Point(finalBoundingBox.Left, finalBoundingBox.Top + (int)(finalBoundingBox.Height * 0.1f));
                 Point TopRight = new Point(finalBoundingBox.Right, finalBoundingBox.Top + (int)(finalBoundingBox.Height * 0.1f));
 
-                Point Top = new Point(boundingBox.Center.X, finalBoundingBox.Top);
-                Point Bottom = new Point(boundingBox.Center.X, finalBoundingBox.Bottom);
+                Point Top = new Point(finalBoundingBox.X + finalBoundingBox.Width / 2, finalBoundingBox.Top);
+                Point Bottom = new Point(finalBoundingBox.X + finalBoundingBox.Width / 2, finalBoundingBox.Bottom);
 
                 Vector2 distanceCorrection = new Vector2();
 
@@ -164,12 +164,12 @@ namespace JamesBond.Physics
                     velocity.Y = 0;
 
                 position += distanceCorrection;
-                Debug.DrawRectangle(new Rectangle(Top.X, Top.Y, 1, 1));
-                Debug.DrawRectangle(new Rectangle(TopLeft.X, TopLeft.Y, 1, 1));
-                Debug.DrawRectangle(new Rectangle(BottomLeft.X, BottomLeft.Y, 1, 1));
-                Debug.DrawRectangle(new Rectangle(Bottom.X, Bottom.Y, 1, 1));
-                Debug.DrawRectangle(new Rectangle(TopRight.X, TopRight.Y, 1, 1));
-                Debug.DrawRectangle(new Rectangle(BottomRight.X, BottomRight.Y, 1, 1));
+                //Debug.DrawRectangle(new Rectangle(Top.X, Top.Y, 1, 1));
+                //Debug.DrawRectangle(new Rectangle(TopLeft.X, TopLeft.Y, 1, 1));
+                //Debug.DrawRectangle(new Rectangle(BottomLeft.X, BottomLeft.Y, 1, 1));
+                //Debug.DrawRectangle(new Rectangle(Bottom.X, Bottom.Y, 1, 1));
+                //Debug.DrawRectangle(new Rectangle(TopRight.X, TopRight.Y, 1, 1));
+                //Debug.DrawRectangle(new Rectangle(BottomRight.X, BottomRight.Y, 1, 1));
             }
 
 
@@ -183,19 +183,19 @@ namespace JamesBond.Physics
 
             List<Rectangle> colliders = new List<Rectangle>();
 
-            int Top = (movedboundingBox.Top / level.Tilesize);
-            int Bottom = (movedboundingBox.Bottom / level.Tilesize + 1);
-            int Left = (movedboundingBox.Left / level.Tilesize);
-            int Right = (movedboundingBox.Right / level.Tilesize + 1);
+            int Top = (movedboundingBox.Top / Level.Tilesize - 1);
+            int Bottom = (movedboundingBox.Bottom / Level.Tilesize + 2);
+            int Left = (movedboundingBox.Left / Level.Tilesize - 1);
+            int Right = (movedboundingBox.Right / Level.Tilesize + 2);
 
-            //Debug.DrawRectangle(new Rectangle(Left*level.Tilesize, Top * level.Tilesize, (Right - Left) * level.Tilesize, (Bottom - Top) * level.Tilesize), Color.Yellow * 0.2f);
+            //Debug.DrawRectangle(new Rectangle(Left * Level.Tilesize, Top * Level.Tilesize, (Right - Left) * Level.Tilesize, (Bottom - Top) * Level.Tilesize), Color.Yellow * 0.2f);
 
             for (int x = Left; x < Right; x++)
             {
                 for (int y = Top; y < Bottom; y++)
                 {
                     if (level[x, y] > 0)
-                        colliders.Add(new Rectangle(x * level.Tilesize, y * level.Tilesize, level.Tilesize, level.Tilesize));
+                        colliders.Add(new Rectangle(x * Level.Tilesize, y * Level.Tilesize, Level.Tilesize, Level.Tilesize));
                 }
             }
 

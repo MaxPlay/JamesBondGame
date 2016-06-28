@@ -12,6 +12,15 @@ namespace JamesBond.Levels
     {
         SpriteSheet tileset;
         int[] tiles;
+        int[] logic;
+        private int background;
+
+        public int Background
+        {
+            get { return background; }
+            set { background = value; }
+        }
+
         private Point dimension;
 
         public Point Dimension
@@ -20,18 +29,40 @@ namespace JamesBond.Levels
             set { dimension = value; }
         }
 
-        private int tilesize;
-        
-        public int Tilesize
+        private static int tilesize;
+
+        public static int Tilesize
         {
             get { return tilesize; }
             set { tilesize = value; }
         }
-        
+
         public Level()
         {
             dimension = new Point(10, 10);
             tiles = new int[10 * 10];
+            logic = new int[10 * 10];
+            tilesize = 32;
+        }
+
+        public Level(string[] content)
+        {
+            dimension = new Point(10, 10);
+            tiles = new int[10 * 10];
+            logic = new int[10 * 10];
+            tilesize = 32;
+
+            for (int i = 2; i < content.Length; i++)
+            {
+                string[] row = content[i].Split(',');
+                for (int j = 0; j < row.Length; j++)
+                {
+                    if (i < 12)
+                        tiles[(i - 2) * 10 + j] = int.Parse(row[j]);
+                    else
+                        logic[(i - 12) * 10 + j] = int.Parse(row[j]);
+                }
+            }
         }
 
         public int this[int x, int y]
@@ -40,7 +71,7 @@ namespace JamesBond.Levels
             {
                 if (x >= 0 && x < dimension.X &&
                     y >= 0 && y < dimension.Y)
-                    return tiles[x + y * dimension.X];
+                    return logic[x + y * dimension.X];
                 return 0;
             }
 
@@ -48,7 +79,7 @@ namespace JamesBond.Levels
             {
                 if (x >= 0 && x < dimension.X &&
                     y >= 0 && y < dimension.Y)
-                    tiles[x + y * dimension.X] = value;
+                    logic[x + y * dimension.X] = value;
             }
         }
 
