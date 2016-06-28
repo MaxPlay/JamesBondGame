@@ -41,7 +41,7 @@ namespace JamesBond
         {
             IsMouseVisible = true;
             graphics.PreferredBackBufferWidth = 10 * 32;
-            graphics.PreferredBackBufferHeight = 10 * 32;
+            graphics.PreferredBackBufferHeight = 11 * 32;
             graphics.ApplyChanges();
 
             // TODO: Add your initialization logic here
@@ -52,6 +52,7 @@ namespace JamesBond
             new SplashScreen("Splash", statemachine);
             new MainMenu("MainMenu", statemachine);
             new Gameplay("Gameplay", statemachine);
+            new Win("Win", statemachine);
 
             statemachine.SetCurrentState("Splash");
             statemachine.Start();

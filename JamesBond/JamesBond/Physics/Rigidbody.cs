@@ -63,6 +63,7 @@ namespace JamesBond.Physics
         }
 
         protected Vector2 limitVelocity;
+        private bool onladder;
 
         public Vector2 LimitVelocity
         {
@@ -70,6 +71,10 @@ namespace JamesBond.Physics
             set { limitVelocity = value; }
         }
 
+        public bool OnLadder
+        {
+            get { return onladder; }
+        }
 
         #endregion Public Properties
 
@@ -86,7 +91,8 @@ namespace JamesBond.Physics
                 return;
 
             //Apply Gravity
-            this.velocity += PhysicsManager.Gravity * (gameTime.ElapsedGameTime.Milliseconds / 1000f);
+            if (!onladder)
+                this.velocity += PhysicsManager.Gravity * (gameTime.ElapsedGameTime.Milliseconds / 1000f);
 
             //Limit the velocity
             if (Math.Abs(velocity.X) > Math.Abs(limitVelocity.X))
@@ -110,13 +116,14 @@ namespace JamesBond.Physics
                 new Rectangle((int)position.X, (int)position.Y, boundingBox.Width, boundingBox.Height),
                 new Rectangle((int)oldposition.X, (int)oldposition.Y, boundingBox.Width, boundingBox.Height)
                 );
-            List<Rectangle> colliders = GetPossibleColliders(level, movedboundingBox);
+            List<Tuple<Rectangle, int>> colliders = GetPossibleColliders(level, movedboundingBox);
 
             //Point Left = new Point(finalBoundingBox.Left, boundingBox.Center.Y);
             //Point Right = new Point(finalBoundingBox.Right, boundingBox.Center.Y);
 
             grounded = false;
-            foreach (Rectangle collider in colliders)
+            onladder = false;
+            foreach (Tuple<Rectangle, int> collider in colliders)
             {
                 Rectangle finalBoundingBox = boundingBox;
                 finalBoundingBox.X = (int)position.X;
@@ -132,44 +139,56 @@ namespace JamesBond.Physics
 
                 Vector2 distanceCorrection = new Vector2();
 
-                if (collider.Contains(Top))
+                if (collider.Item2 == 1)
                 {
-                    distanceCorrection.Y = collider.Bottom - Top.Y;
-                    velocity.Y = 0;
-                }
+                    if (collider.Item1.Contains(Top))
+                    {
+                        distanceCorrection.Y = collider.Item1.Bottom - Top.Y;
+                        velocity.Y = 0;
+                    }
 
-                if (collider.Contains(Bottom))
+                    if (collider.Item1.Contains(Bottom))
+                    {
+                        distanceCorrection.Y = collider.Item1.Top - Bottom.Y;
+                        velocity.Y = 0;
+                        velocity.X *= 0.9f;
+                        grounded = true;
+                    }
+
+                    if (collider.Item1.Contains(TopLeft) || collider.Item1.Contains(BottomLeft))
+                    {
+                        distanceCorrection.X = collider.Item1.Right - TopLeft.X;
+                        velocity.X = 0;
+                    }
+
+                    if (collider.Item1.Contains(TopRight) || collider.Item1.Contains(BottomRight))
+                    {
+                        distanceCorrection.X = collider.Item1.Left - TopRight.X;
+                        velocity.X = 0;
+                    }
+
+                    if (Math.Abs(velocity.X) < 0.1f)
+                        velocity.X = 0;
+                    if (Math.Abs(velocity.Y) < 0.1f)
+                        velocity.Y = 0;
+                    position += distanceCorrection;
+                    //Debug.DrawRectangle(new Rectangle(Top.X, Top.Y, 1, 1));
+                    //Debug.DrawRectangle(new Rectangle(TopLeft.X, TopLeft.Y, 1, 1));
+                    //Debug.DrawRectangle(new Rectangle(BottomLeft.X, BottomLeft.Y, 1, 1));
+                    //Debug.DrawRectangle(new Rectangle(Bottom.X, Bottom.Y, 1, 1));
+                    //Debug.DrawRectangle(new Rectangle(TopRight.X, TopRight.Y, 1, 1));
+                    //Debug.DrawRectangle(new Rectangle(BottomRight.X, BottomRight.Y, 1, 1));
+                }
+                else if (collider.Item2 == 2)
                 {
-                    distanceCorrection.Y = collider.Top - Bottom.Y;
-                    velocity.Y = 0;
-                    velocity.X *= 0.9f;
-                    grounded = true;
+                    if (finalBoundingBox.Intersects(collider.Item1))
+                        if (velocity.Y != 0)
+                        {
+                            velocity.Y = 0;
+                            velocity.X = velocity.X * 0.1f;
+                            onladder = true;
+                        }
                 }
-
-                if (collider.Contains(TopLeft) || collider.Contains(BottomLeft))
-                {
-                    distanceCorrection.X = collider.Right - TopLeft.X;
-                    velocity.X = 0;
-                }
-
-                if (collider.Contains(TopRight) || collider.Contains(BottomRight))
-                {
-                    distanceCorrection.X = collider.Left - TopRight.X;
-                    velocity.X = 0;
-                }
-
-                if (Math.Abs(velocity.X) < 0.1f)
-                    velocity.X = 0;
-                if (Math.Abs(velocity.Y) < 0.1f)
-                    velocity.Y = 0;
-
-                position += distanceCorrection;
-                //Debug.DrawRectangle(new Rectangle(Top.X, Top.Y, 1, 1));
-                //Debug.DrawRectangle(new Rectangle(TopLeft.X, TopLeft.Y, 1, 1));
-                //Debug.DrawRectangle(new Rectangle(BottomLeft.X, BottomLeft.Y, 1, 1));
-                //Debug.DrawRectangle(new Rectangle(Bottom.X, Bottom.Y, 1, 1));
-                //Debug.DrawRectangle(new Rectangle(TopRight.X, TopRight.Y, 1, 1));
-                //Debug.DrawRectangle(new Rectangle(BottomRight.X, BottomRight.Y, 1, 1));
             }
 
 
@@ -177,11 +196,11 @@ namespace JamesBond.Physics
             boundingBox.Y = (int)Math.Round(position.Y);
         }
 
-        private static List<Rectangle> GetPossibleColliders(Level level, Rectangle movedboundingBox)
+        private static List<Tuple<Rectangle, int>> GetPossibleColliders(Level level, Rectangle movedboundingBox)
         {
             //Generate a list of all the colliders that are overlapping this area
 
-            List<Rectangle> colliders = new List<Rectangle>();
+            List<Tuple<Rectangle, int>> colliders = new List<Tuple<Rectangle, int>>();
 
             int Top = (movedboundingBox.Top / Level.Tilesize - 1);
             int Bottom = (movedboundingBox.Bottom / Level.Tilesize + 2);
@@ -195,7 +214,7 @@ namespace JamesBond.Physics
                 for (int y = Top; y < Bottom; y++)
                 {
                     if (level[x, y] > 0)
-                        colliders.Add(new Rectangle(x * Level.Tilesize, y * Level.Tilesize, Level.Tilesize, Level.Tilesize));
+                        colliders.Add(Tuple.Create<Rectangle, int>(new Rectangle(x * Level.Tilesize, y * Level.Tilesize, Level.Tilesize, Level.Tilesize), level[x, y]));
                 }
             }
 

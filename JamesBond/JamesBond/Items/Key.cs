@@ -13,7 +13,7 @@ namespace JamesBond.Items
     {
         public Key()
         {
-            sprites = new SpriteSheet(Game1.ContentManager.Load<Texture2D>("SpectreRing"), 32, 32);
+            sprites = new SpriteSheet(Game1.ContentManager.Load<Texture2D>("Key"), 32, 32);
             animator = new Animator();
             animator.AddAnimation("Rotate", new Animation(0.1f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
             animator.Start();

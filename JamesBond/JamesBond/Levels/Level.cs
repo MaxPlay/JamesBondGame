@@ -1,4 +1,5 @@
-﻿using JamesBond.Rendering;
+﻿using JamesBond.Items;
+using JamesBond.Rendering;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -14,6 +15,7 @@ namespace JamesBond.Levels
         int[] tiles;
         int[] logic;
         private int background;
+        Collectable collectable;
 
         public int Background
         {
@@ -45,6 +47,11 @@ namespace JamesBond.Levels
             tilesize = 32;
         }
 
+        public Collectable HasCollectable()
+        {
+            return collectable;
+        }
+
         public Level(string[] content)
         {
             dimension = new Point(10, 10);
@@ -60,7 +67,20 @@ namespace JamesBond.Levels
                     if (i < 12)
                         tiles[(i - 2) * 10 + j] = int.Parse(row[j]);
                     else
+                    {
                         logic[(i - 12) * 10 + j] = int.Parse(row[j]);
+
+                        if (logic[(i - 12) * 10 + j] == 4)
+                        {
+                            collectable = new SpectreRing();
+                            collectable.BoundingBox = new Rectangle(j * 32, (i - 12) * 32, tilesize, tilesize);
+                        }
+                        if (logic[(i - 12) * 10 + j] == 6)
+                        {
+                            collectable = new Key();
+                            collectable.BoundingBox = new Rectangle(j * 32, (i - 12) * 32, tilesize, tilesize);
+                        }
+                    }
                 }
             }
         }
@@ -83,6 +103,16 @@ namespace JamesBond.Levels
             }
         }
 
+        public void Update(GameTime gameTime, Rectangle player)
+        {
+            if (collectable != null)
+            {
+                collectable.Update(gameTime);
+                if (player.Intersects(collectable.BoundingBox))
+                    collectable.Collect();
+            }
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             for (int y = 0; y < dimension.Y; y++)
@@ -93,6 +123,9 @@ namespace JamesBond.Levels
                         spriteBatch.Draw(tileset.Texture, new Vector2(x * tileset.TileSize.X, y * tileset.TileSize.Y), tileset[this[x, y]].SpriteRectangle, Color.White);
                 }
             }
+
+            if (collectable != null)
+                collectable.Draw(spriteBatch);
         }
     }
 }

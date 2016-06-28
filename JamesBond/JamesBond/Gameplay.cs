@@ -16,12 +16,19 @@ namespace JamesBond
 {
     class Gameplay : State
     {
+        Color[] debugcolors = new Color[] { Color.Transparent, Color.Red, Color.White, Color.Orange, Color.DarkOrange, Color.Blue, Color.Turquoise };
+
         Dictionary<Point, Level> levels;
         Bond player;
         Point currentLevel;
         Point targetLevel;
-        SpectreRing ring;
-        private float transitionTimer;
+        private bool ringCollected;
+        private bool keyCollected;
+        private Texture2D guibase;
+        private SpectreRing ring;
+        private Key key;
+        private TimeSpan timer;
+        private SpriteFont lcdFont;
 
         void SetNextLevel(Directions targetDirection)
         {
@@ -46,18 +53,19 @@ namespace JamesBond
                     break;
             }
             player.BoundingBox = b;
-            transitionTimer = 0;
         }
 
         public Gameplay(string name, StateMachine statemachine)
             : base(name, statemachine)
         {
             levels = new Dictionary<Point, Level>();
-            LoadLevels();
-            ring = new SpectreRing();
-            ring.BoundingBox = new Rectangle(100, 100, ring.BoundingBox.Width, ring.BoundingBox.Height);
             player = new Bond();
-            player.BoundingBox = new Rectangle(100, 100, 20, 40);
+            guibase = Game1.ContentManager.Load<Texture2D>("UI");
+            ring = new SpectreRing();
+            ring.BoundingBox = new Rectangle(135, 320, 32, 32);
+            key = new Key();
+            key.BoundingBox = new Rectangle(175, 320, 32, 32);
+            lcdFont = Game1.ContentManager.Load<SpriteFont>("lcd");
             /*levels.Add(new Point(0, 0), new Level());
             levels[currentLevel].Tilesize = 32;
             Random rand = new Random(DateTime.Now.Millisecond);
@@ -80,8 +88,19 @@ namespace JamesBond
             for (int i = 0; i < levelfiles.Length; i++)
             {
                 string[] content = File.ReadAllLines(levelfiles[i]);
-                levels.Add(new Point(int.Parse(content[0]), int.Parse(content[1])), new Level(content));
+                Point location = new Point(int.Parse(content[0]), int.Parse(content[1]));
+                levels.Add(location, new Level(content));
+                if (levels[location].HasCollectable() != null)
+                    levels[location].HasCollectable().Collected += Gameplay_Collected;
             }
+        }
+
+        private void Gameplay_Collected(object sender, EventArgs e)
+        {
+            if (sender is SpectreRing)
+                ringCollected = true;
+            if (sender is Key)
+                keyCollected = true;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -98,42 +117,75 @@ namespace JamesBond
                             y * Level.Tilesize,
                             Level.Tilesize,
                             Level.Tilesize),
-                        levels[currentLevel][x, y] > 0 ? Color.Red : Color.Transparent);
+                        debugcolors[levels[currentLevel][x, y]]);
                 }
             }
             //levels[currentLevel].Draw(spriteBatch);
-            //if (currentLevel != targetLevel)
-            //levels[targetLevel].Draw(spriteBatch);
             player.Draw(spriteBatch);
-            ring.Draw(spriteBatch);
+            DrawGui(spriteBatch);
             spriteBatch.End();
+        }
+
+        private void DrawGui(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(guibase, new Vector2(0, 320), Color.White);
+            if (ringCollected)
+                ring.Draw(spriteBatch);
+            if (keyCollected)
+                key.Draw(spriteBatch);
+
+            spriteBatch.DrawString(lcdFont, timer.ToString(@"hh\:mm\:ss"), new Vector2(34, 318), Color.White);
         }
 
         public override void Initialize()
         {
             currentLevel = new Point(2, 5);
             targetLevel = new Point(2, 5);
+            LoadLevels();
+            player.BoundingBox = new Rectangle(100, 200, 20, 40);
+            timer = new TimeSpan(1, 0, 0);
         }
 
         public override void Unload()
         {
-
+            keyCollected = false;
+            ringCollected = false;
+            levels.Clear();
         }
 
         public override void Update(GameTime gameTime)
         {
+            UpdateGUI(gameTime);
+
             PhysicsManager.Update(gameTime, levels[currentLevel]);
 
+            //Jump
             if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.Space) && player.Grounded)
                 player.Velocity += Vector2.UnitY * -6;
 
+            //Walk
             if (InputManager.CurrentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
                 player.Velocity += Vector2.UnitX * 1;
 
             if (InputManager.CurrentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
                 player.Velocity += Vector2.UnitX * -1;
 
+            //LadderLogic (Overwrites Walk)
+            if (player.OnLadder)
+            {
+                if (InputManager.CurrentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+                    player.Velocity = -Vector2.UnitY;
+                if (InputManager.CurrentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+                    player.Velocity = Vector2.UnitY;
+                if (InputManager.CurrentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                    player.Velocity = Vector2.UnitX;
+                if (InputManager.CurrentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                    player.Velocity = -Vector2.UnitX;
+            }
+
             player.Update(gameTime);
+
+            levels[currentLevel].Update(gameTime, player.BoundingBox);
 
             if (player.BoundingBox.Center.X > 32 * 10)
                 SetNextLevel(Directions.east);
@@ -146,6 +198,17 @@ namespace JamesBond
 
             if (player.BoundingBox.Center.Y < 0)
                 SetNextLevel(Directions.north);
+
+            if (currentLevel == new Point(15, 4) && player.BoundingBox.X > 100)
+                statemachine.SetCurrentState("Win");
+
+        }
+
+        private void UpdateGUI(GameTime gameTime)
+        {
+            timer -= gameTime.ElapsedGameTime;
+            ring.Update(gameTime);
+            key.Update(gameTime);
         }
     }
 }

@@ -11,6 +11,7 @@ namespace JamesBond.Items
 {
     public abstract class Collectable
     {
+        protected bool collected;
         protected SpriteSheet sprites;
         protected Animator animator;
 
@@ -32,5 +33,11 @@ namespace JamesBond.Items
         public abstract void Draw(SpriteBatch spriteBatch);
 
         public abstract void Update(GameTime gameTime);
+
+        public void Collect()
+        {
+            OnCollect();
+            collected = true;
+        }
     }
 }
