@@ -41,28 +41,28 @@ namespace JamesBond
         {
             logo = Game1.ContentManager.Load<Texture2D>("SpectreLogo");
             font = Game1.ContentManager.Load<SpriteFont>("Default");
-            btnStart = new Button(null, null, "Start", new Point(50, 190));
+            btnStart = new Button(null, null, Localization.GetString(Settings.Language, "start"), new Point(50, 190));
             btnStart.Font = font;
             btnStart.TextColor = Color.DarkGray;
             btnStart.HoverTextColor = Color.White;
             btnStart.BoundingBox = new Rectangle(btnStart.BoundingBox.X, btnStart.BoundingBox.Y, 220, 24);
             btnStart.Click += BtnStart_Click;
 
-            btnSettings = new Button(null, null, "Settings", new Point(50, 220));
+            btnSettings = new Button(null, null, Localization.GetString(Settings.Language, "settings"), new Point(50, 220));
             btnSettings.Font = font;
             btnSettings.TextColor = Color.DarkGray;
             btnSettings.HoverTextColor = Color.White;
             btnSettings.BoundingBox = new Rectangle(btnSettings.BoundingBox.X, btnSettings.BoundingBox.Y, 220, 24);
             btnSettings.Click += BtnSettings_Click;
 
-            btnCredits = new Button(null, null, "Credits", new Point(50, 250));
+            btnCredits = new Button(null, null, Localization.GetString(Settings.Language, "credits"), new Point(50, 250));
             btnCredits.Font = font;
             btnCredits.TextColor = Color.DarkGray;
             btnCredits.HoverTextColor = Color.White;
             btnCredits.BoundingBox = new Rectangle(btnCredits.BoundingBox.X, btnCredits.BoundingBox.Y, 220, 24);
             btnCredits.Click += BtnCredits_Click;
 
-            btnQuit = new Button(null, null, "Quit", new Point(50, 280));
+            btnQuit = new Button(null, null, Localization.GetString(Settings.Language, "quit"), new Point(50, 280));
             btnQuit.Font = font;
             btnQuit.TextColor = Color.DarkGray;
             btnQuit.HoverTextColor = Color.White;

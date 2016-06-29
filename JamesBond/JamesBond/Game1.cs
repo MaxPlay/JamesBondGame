@@ -29,6 +29,7 @@ namespace JamesBond
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             ContentManager = Content;
+            Localization.LoadLanguages();
         }
 
         /// <summary>
@@ -53,6 +54,7 @@ namespace JamesBond
             new MainMenu("MainMenu", statemachine);
             new Gameplay("Gameplay", statemachine);
             new Win("Win", statemachine);
+            new SettingsMenu("Settings", statemachine);
 
             statemachine.SetCurrentState("Splash");
             statemachine.Start();

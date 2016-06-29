@@ -82,12 +82,16 @@
     <Compile Include="Debug.cs" />
     <Compile Include="Gameplay.cs" />
     <Compile Include="GUI\Button.cs" />
+    <Compile Include="GUI\RadioButtonEventArgs.cs" />
+    <Compile Include="GUI\RadioButton.cs" />
+    <Compile Include="GUI\RadioButtonGroup.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="Items\Collectable.cs" />
     <Compile Include="Items\Key.cs" />
     <Compile Include="Items\SpectreRing.cs" />
     <Compile Include="Levels\Directions.cs" />
     <Compile Include="Levels\Level.cs" />
+    <Compile Include="Localization.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="Physics\Rigidbody.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
@@ -96,6 +100,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="SettingsMenu.cs" />
     <Compile Include="SplashScreen.cs" />
     <Compile Include="Statemachine\State.cs" />
     <Compile Include="Statemachine\StateMachine.cs" />

@@ -9,7 +9,7 @@ namespace JamesBond.GUI
 {
     public class Button
     {
-        private Texture2D texture;
+        protected Texture2D texture;
 
         public Texture2D Texture
         {
@@ -17,7 +17,7 @@ namespace JamesBond.GUI
             set { texture = value; }
         }
 
-        private Texture2D hoverTexture;
+        protected Texture2D hoverTexture;
 
         public Texture2D HoverTexture
         {
@@ -31,7 +31,7 @@ namespace JamesBond.GUI
             set { boundingBox.X = value.X; boundingBox.Y = value.Y; }
         }
 
-        private string text;
+        protected string text;
 
         public string Text
         {
@@ -39,7 +39,7 @@ namespace JamesBond.GUI
             set { text = value; }
         }
 
-        private SpriteFont font;
+        protected SpriteFont font;
 
         public SpriteFont Font
         {
@@ -47,7 +47,7 @@ namespace JamesBond.GUI
             set { font = value; }
         }
 
-        private Color textColor;
+        protected Color textColor;
 
         public Color TextColor
         {
@@ -55,7 +55,7 @@ namespace JamesBond.GUI
             set { textColor = value; }
         }
 
-        private Color hoverTextColor;
+        protected Color hoverTextColor;
 
         public Color HoverTextColor
         {
@@ -63,8 +63,8 @@ namespace JamesBond.GUI
             set { hoverTextColor = value; }
         }
 
-        private Rectangle boundingBox;
-        private bool hover;
+        protected Rectangle boundingBox;
+        protected bool hover;
 
         public Rectangle BoundingBox
         {
@@ -95,7 +95,7 @@ namespace JamesBond.GUI
                 OnClick();
         }
 
-        private void OnClick()
+        protected void OnClick()
         {
             Click?.Invoke(this, new EventArgs());
         }

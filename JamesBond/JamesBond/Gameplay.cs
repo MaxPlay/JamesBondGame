@@ -29,6 +29,10 @@ namespace JamesBond
         private Key key;
         private TimeSpan timer;
         private SpriteFont lcdFont;
+        private int ammo;
+        private int health;
+        private SpriteSheet ammoTex;
+        private SpriteSheet healthTex;
 
         void SetNextLevel(Directions targetDirection)
         {
@@ -66,19 +70,9 @@ namespace JamesBond
             key = new Key();
             key.BoundingBox = new Rectangle(175, 320, 32, 32);
             lcdFont = Game1.ContentManager.Load<SpriteFont>("lcd");
-            /*levels.Add(new Point(0, 0), new Level());
-            levels[currentLevel].Tilesize = 32;
-            Random rand = new Random(DateTime.Now.Millisecond);
-            for (int y = 0; y < levels[currentLevel].Dimension.Y; y++)
-            {
-                for (int x = 0; x < levels[currentLevel].Dimension.X; x++)
-                {
-                    levels[currentLevel][x, y] = x == 0 || y == 0 || x == levels[currentLevel].Dimension.X - 1 || y == levels[currentLevel].Dimension.Y - 1 ? 1 : 0;
-                    if (levels[currentLevel][x, y] == 0)
-                        levels[currentLevel][x, y] = rand.Next(0, 100) < 10 ? 1 : 0;
-                }
-            }
-            */
+
+            ammoTex = new SpriteSheet(Game1.ContentManager.Load<Texture2D>("ammo"), 29, 21);
+            healthTex = new SpriteSheet(Game1.ContentManager.Load<Texture2D>("health"), 27, 27);
         }
 
         private void LoadLevels()
@@ -135,6 +129,9 @@ namespace JamesBond
                 key.Draw(spriteBatch);
 
             spriteBatch.DrawString(lcdFont, timer.ToString(@"hh\:mm\:ss"), new Vector2(34, 318), Color.White);
+
+            spriteBatch.Draw(healthTex.Texture, new Rectangle(215, 323, (int)healthTex.TileSize.X, (int)healthTex.TileSize.Y), healthTex[5 - health].SpriteRectangle, Color.White);
+            spriteBatch.Draw(ammoTex.Texture, new Rectangle(246, 326, (int)ammoTex.TileSize.X, (int)ammoTex.TileSize.Y), ammoTex[4 - ammo].SpriteRectangle, Color.White);
         }
 
         public override void Initialize()
@@ -144,6 +141,8 @@ namespace JamesBond
             LoadLevels();
             player.BoundingBox = new Rectangle(100, 200, 20, 40);
             timer = new TimeSpan(1, 0, 0);
+            ammo = 4;
+            health = 5;
         }
 
         public override void Unload()
@@ -157,7 +156,7 @@ namespace JamesBond
         {
             UpdateGUI(gameTime);
 
-            PhysicsManager.Update(gameTime, levels[currentLevel]);
+            PhysicsManager.Update(gameTime, levels[currentLevel], ringCollected, keyCollected);
 
             //Jump
             if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.Space) && player.Grounded)
@@ -199,9 +198,11 @@ namespace JamesBond
             if (player.BoundingBox.Center.Y < 0)
                 SetNextLevel(Directions.north);
 
-            if (currentLevel == new Point(15, 4) && player.BoundingBox.X > 100)
+            if (currentLevel == new Point(15, 4) && player.BoundingBox.X > 85)
                 statemachine.SetCurrentState("Win");
 
+            if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
+                statemachine.SetCurrentState("MainMenu");
         }
 
         private void UpdateGUI(GameTime gameTime)

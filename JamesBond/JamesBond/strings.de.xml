@@ -1,1 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8" ?> 
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<strings name="Deutsch" >
+  <string identifier="start">Start</string>
+  <string identifier="settings">Einstellungen</string>
+  <string identifier="credits">Mitwirkende</string>
+  <string identifier="quit">Beenden</string>
+  <string identifier="briefing">Einweisung</string>
+  <string identifier="briefing_message">Sie sind in Rom, 007.\nDerzeit befinden Sie sich auf dem Weg zum\nTreffen einer Geheimorganisation namens "Spectre".\nDurch den direkten Eingang kommen Sie nur,\nwenn sie den Ring der Organisation besitzen.\nIhre Walther PPK besitzt 4 Schuss und Sie\n haben keine weitere Munition bei sich,\nsetzen Sie sie also mit bedacht ein.\n\nViel Erfolg, 007.</string>
+</strings>

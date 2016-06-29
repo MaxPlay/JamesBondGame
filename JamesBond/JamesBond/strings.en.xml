@@ -1,1 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8" ?> 
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<strings name="English">
+  <string identifier="start">Start</string>
+  <string identifier="settings">Settings</string>
+  <string identifier="credits">Credits</string>
+  <string identifier="quit">Quit</string>
+  <string identifier="briefing">Briefing</string>
+  <string identifier="briefing_message">You are in rome, 007.\You are currently on your way to a\nmeeting of a secret organization called "Spectre".\nYou can only pass the main entrance,\nwhen you own the ring of the organization.\nYour Walther PPK has 4 shots left and\nyou don't have any spare ammunition with you,\nso think before you shoot.\n\nGood Luck, 007.</string>
+</strings>

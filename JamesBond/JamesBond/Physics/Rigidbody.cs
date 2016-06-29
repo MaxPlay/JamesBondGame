@@ -85,7 +85,7 @@ namespace JamesBond.Physics
         /// </summary>
         /// <param name="level">Der Level</param>
         /// <param name="gameTime">Der GameTime</param>
-        public void UpdatePhysics(Level level, GameTime gameTime)
+        public void UpdatePhysics(Level level, GameTime gameTime, bool ringCollected, bool keyCollected)
         {
             if (!awake)
                 return;
@@ -116,7 +116,7 @@ namespace JamesBond.Physics
                 new Rectangle((int)position.X, (int)position.Y, boundingBox.Width, boundingBox.Height),
                 new Rectangle((int)oldposition.X, (int)oldposition.Y, boundingBox.Width, boundingBox.Height)
                 );
-            List<Tuple<Rectangle, int>> colliders = GetPossibleColliders(level, movedboundingBox);
+            List<Tuple<Rectangle, int>> colliders = GetPossibleColliders(level, movedboundingBox, ringCollected, keyCollected);
 
             //Point Left = new Point(finalBoundingBox.Left, boundingBox.Center.Y);
             //Point Right = new Point(finalBoundingBox.Right, boundingBox.Center.Y);
@@ -171,6 +171,7 @@ namespace JamesBond.Physics
                         velocity.X = 0;
                     if (Math.Abs(velocity.Y) < 0.1f)
                         velocity.Y = 0;
+
                     position += distanceCorrection;
                     //Debug.DrawRectangle(new Rectangle(Top.X, Top.Y, 1, 1));
                     //Debug.DrawRectangle(new Rectangle(TopLeft.X, TopLeft.Y, 1, 1));
@@ -196,7 +197,7 @@ namespace JamesBond.Physics
             boundingBox.Y = (int)Math.Round(position.Y);
         }
 
-        private static List<Tuple<Rectangle, int>> GetPossibleColliders(Level level, Rectangle movedboundingBox)
+        private static List<Tuple<Rectangle, int>> GetPossibleColliders(Level level, Rectangle movedboundingBox, bool ringCollected, bool keyCollected)
         {
             //Generate a list of all the colliders that are overlapping this area
 
@@ -213,8 +214,16 @@ namespace JamesBond.Physics
             {
                 for (int y = Top; y < Bottom; y++)
                 {
-                    if (level[x, y] > 0)
-                        colliders.Add(Tuple.Create<Rectangle, int>(new Rectangle(x * Level.Tilesize, y * Level.Tilesize, Level.Tilesize, Level.Tilesize), level[x, y]));
+                    int type = level[x, y];
+
+                    if (!ringCollected && type == 3)
+                        type = 1;
+
+                    if (!keyCollected && type == 5)
+                        type = 1;
+
+                    if (type > 0)
+                        colliders.Add(Tuple.Create<Rectangle, int>(new Rectangle(x * Level.Tilesize, y * Level.Tilesize, Level.Tilesize, Level.Tilesize), type));
                 }
             }
 

@@ -27,11 +27,11 @@ namespace JamesBond.Physics
             gravity = new Vector2(0, 9.81f);
         }
 
-        public static void Update(GameTime gameTime, Level currentLevel)
+        public static void Update(GameTime gameTime, Level currentLevel, bool ringCollected, bool keyCollected)
         {
             for (int i = 0; i < rigidbodies.Count; i++)
             {
-                rigidbodies[i].UpdatePhysics(currentLevel, gameTime);
+                rigidbodies[i].UpdatePhysics(currentLevel, gameTime, ringCollected, keyCollected);
             }
         }
 
